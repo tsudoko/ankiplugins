@@ -20,8 +20,11 @@
 from anki.hooks import wrap
 from aqt import editor, browser, reviewer
 from aqt.qt import QPalette, QColor
+import collections
 import math
 import re
+
+Candidate = collections.namedtuple("Candidate", ["val", "diff"])
 
 def main():
     # Query system colours.
@@ -82,8 +85,8 @@ def get_new_lightness(existing, pref):
                 if pref is None: distance = None
                 else:            distance = abs(pref - val)
                 r = rating(space, distance, 256, crit_range=50, crit_value=0.85)
-                candidates.append((val, r))
-        candidates.sort(key=lambda c: c[1])
+                candidates.append(Candidate(val, r))
+        candidates.sort(key=lambda c: c.diff)
         return candidates[-1][0]
 
 
@@ -102,7 +105,7 @@ def get_new_hue(existing, pref):
         When a == b is true, this will scan all other 359 hues.
         """
         diff = (high - low - 1) % 360
-        best_val = (None, 0)
+        best_val = Candidate(None, 0)
         for offset in range(1, diff + 1):
             val = (low + offset) % 360
             space = min(offset, diff - offset + 1)
@@ -111,7 +114,7 @@ def get_new_hue(existing, pref):
                                             (val - pref) % 360)
             r = rating(space, distance, 360, crit_range=40, crit_value=0.8)
             if r > best_val[1]:
-                best_val = (val, r)
+                best_val = Candidate(val, r)
         return best_val
     # Filter input of duplicates and sort it (required below).
     existing = sorted(set(existing))
@@ -122,7 +125,7 @@ def get_new_hue(existing, pref):
         for i in range(len(existing)):
             a, b = existing[i], existing[(i + 1) % len(existing)]
             candidates.append(choose_best_between(a, b))
-        candidates.sort(key=lambda c: c[1])
+        candidates.sort(key=lambda c: c.diff)
         return candidates[-1][0]
 
 #-------------------------------------------------------------------------------
