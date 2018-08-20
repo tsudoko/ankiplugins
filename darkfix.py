@@ -83,7 +83,7 @@ def get_new_lightness(existing, pref):
                 else:            distance = abs(pref - val)
                 r = rating(space, distance, 256, crit_range=50, crit_value=0.85)
                 candidates.append((val, r))
-        candidates.sort(key=lambda (val, diff): diff)
+        candidates.sort(key=lambda c: c[1])
         return candidates[-1][0]
 
 
@@ -122,7 +122,7 @@ def get_new_hue(existing, pref):
         for i in range(len(existing)):
             a, b = existing[i], existing[(i + 1) % len(existing)]
             candidates.append(choose_best_between(a, b))
-        candidates.sort(key=lambda (val, diff): diff)
+        candidates.sort(key=lambda c: c[1])
         return candidates[-1][0]
 
 #-------------------------------------------------------------------------------
