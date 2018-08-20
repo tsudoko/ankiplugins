@@ -37,10 +37,11 @@ def main():
     coloursuspended.setNamedColor(browser.COLOUR_SUSPENDED)
     colourmarked = QColor()
     colourmarked.setNamedColor(browser.COLOUR_MARKED)
+    flagcolours = {k: QColor(v) for k, v in browser.flagColours.items()}
     lightness_blacklist = [textcolour.lightness()]
     hue_blacklist = [basecolour.hue(), textcolour.hue()]
     lightness_preference = max(basecolour.lightness(), 40)
-    for colour in [coloursuspended, colourmarked]:
+    for colour in [coloursuspended, colourmarked, *flagcolours.values()]:
         (h, s, l, a) = colour.getHsl()
         new_lightness = get_new_lightness(lightness_blacklist, lightness_preference)
         # print("Considering {0} with preference {2} choose lightness {1}\n".format(
@@ -52,6 +53,7 @@ def main():
         colour.setHsl(new_hue, s, new_lightness, a)
     browser.COLOUR_SUSPENDED = coloursuspended.name()
     browser.COLOUR_MARKED = colourmarked.name()
+    browser.flagColours = flagcolours
 
     # Inject colouring into the web view.
     editor._html = ("<style>.fname { color: %s; }</style>" % textcolour.name()) + editor._html
