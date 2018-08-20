@@ -29,13 +29,6 @@ def main():
     textcolour = p.color(QPalette.Text)
     basecolour = p.color(QPalette.Base)
 
-    # Inject background colour into the browser.
-    def tree_colour_hook(self):
-        p = self.form.tree.palette()
-        p.setColor(QPalette.Base, basecolour)
-        self.form.tree.setPalette(p)
-    browser.Browser.setupTree = wrap(browser.Browser.setupTree, tree_colour_hook)
-
     # Change suspend and mark colours.
     coloursuspended = QColor()
     coloursuspended.setNamedColor(browser.COLOUR_SUSPENDED)
@@ -58,15 +51,7 @@ def main():
     browser.COLOUR_MARKED = colourmarked.name()
 
     # Inject colouring into the web view.
-    editor._html = re.sub(
-        "(\\.fname\s*\\{)",
-        "\\1 color: {0};".format(textcolour.name()),
-        editor._html)
-    # Fix the default text colour for type answer edit elements.
-    reviewer.Reviewer._css = re.sub(
-        "(#typeans\s*\\{)",
-        "\\1 color: {0};".format(textcolour.name()),
-        reviewer.Reviewer._css)
+    editor._html = ("<style>.fname { color: %s; }</style>" % textcolour.name()) + editor._html
 
 def get_new_lightness(existing, pref):
     """Given a list of existing lightness return a new, different value.
