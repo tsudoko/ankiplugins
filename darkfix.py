@@ -41,7 +41,14 @@ def main():
     lightness_blacklist = [textcolour.lightness()]
     hue_blacklist = [basecolour.hue(), textcolour.hue()]
     lightness_preference = max(basecolour.lightness(), 40)
-    for colour in [coloursuspended, colourmarked, *flagcolours.values()]:
+
+    for colour in flagcolours.values():
+        (h, s, l, a) = colour.getHsl()
+        new_lightness = get_new_lightness(lightness_blacklist, lightness_preference)
+        hue_blacklist.append(h)
+        colour.setHsl(h, s, new_lightness, a)
+
+    for colour in [coloursuspended, colourmarked]:
         (h, s, l, a) = colour.getHsl()
         new_lightness = get_new_lightness(lightness_blacklist, lightness_preference)
         # print("Considering {0} with preference {2} choose lightness {1}\n".format(
@@ -51,6 +58,7 @@ def main():
         #     hue_blacklist, new_hue, h))
         hue_blacklist.append(new_hue)
         colour.setHsl(new_hue, s, new_lightness, a)
+
     browser.COLOUR_SUSPENDED = coloursuspended.name()
     browser.COLOUR_MARKED = colourmarked.name()
     browser.flagColours = flagcolours
