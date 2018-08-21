@@ -18,8 +18,8 @@
 # - Fixed invalid colour values in range lightness_list.
 
 from anki.hooks import wrap
-from aqt import editor, browser, reviewer
-from aqt.qt import QPalette, QColor
+from aqt import mw, editor, browser, reviewer, webview
+from aqt.qt import Qt, QPalette, QColor
 import collections
 import math
 import re
@@ -54,6 +54,10 @@ def main():
     browser.COLOUR_SUSPENDED = coloursuspended.name()
     browser.COLOUR_MARKED = colourmarked.name()
     browser.flagColours = flagcolours
+
+    # Fix main window backgrounds.
+    for w in (mw.toolbarWeb, mw.web, mw.bottomWeb):
+        w.page().setBackgroundColor(Qt.white)
 
     # Inject colouring into the web view.
     editor._html = ("<style>.fname { color: %s; }</style>" % textcolour.name()) + editor._html
