@@ -61,7 +61,7 @@ def main():
 
     browser.COLOUR_SUSPENDED = coloursuspended.name()
     browser.COLOUR_MARKED = colourmarked.name()
-    browser.flagColours = flagcolours
+    browser.flagColours = {k: v.name() for k, v in flagcolours.items()}
 
     # Fix main window backgrounds.
     for w in (mw.toolbarWeb, mw.web, mw.bottomWeb):
