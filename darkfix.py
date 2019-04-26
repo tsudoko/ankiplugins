@@ -20,6 +20,7 @@
 from anki.hooks import wrap
 from aqt import mw, editor, browser, reviewer, webview
 from aqt.qt import Qt, QPalette, QColor
+from aqt.webview import AnkiWebView
 import collections
 import math
 import re
@@ -65,7 +66,9 @@ def main():
 
     # Fix main window backgrounds.
     for w in (mw.toolbarWeb, mw.web, mw.bottomWeb):
-        w.page().setBackgroundColor(Qt.white)
+        w._getWindowColor = lambda: QColor(Qt.white)
+
+    AnkiWebView._getWindowColor = lambda self: self.palette().color(QPalette.Window)
 
     # Inject colouring into the web view.
     editor._html = ("<style>.fname { color: %s; }</style>" % textcolour.name()) + editor._html
